@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Games — Game Night Guild</title>
+    <meta name="description" content="Explore the games behind Game Night Guild — Family Feud-style survey showdowns and classic pub trivia, powered by custom-built software.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            /* Exact palette from gamenightguild.net */
+            --bg-primary: #0C0E1F;
+            --bg-secondary: #10122a;
+            --bg-card: #141636;
+            --bg-card-hover: #191c42;
+            --border-color: #232650;
+
+            --text-primary: #ffffff;
+            --text-secondary: #9d9fba;
+            --text-muted: #646680;
+
+            --gold: #FBBA1F;
+            --gold-bright: #fcc94e;
+            --gold-glow: rgba(251, 186, 31, 0.15);
+
+            --purple-deep: #451174;
+            --purple: #60229D;
+            --purple-bright: #7e3fc0;
+            --purple-glow: rgba(96, 34, 157, 0.20);
+
+            --cyan: #0090BA;
+            --cyan-bright: #1ab0de;
+            --cyan-glow: rgba(0, 144, 186, 0.15);
+
+            --brown: #63492D;
+
+            --gradient-purple: linear-gradient(135deg, #60229D, #451174);
+            --gradient-hero: linear-gradient(180deg, rgba(69, 17, 116, 0.08) 0%, transparent 50%);
+
+            --radius: 16px;
+            --radius-sm: 10px;
+            --shadow-card: 0 4px 30px rgba(0,0,0,0.5);
+            --font-main: 'Poppins', -apple-system, sans-serif;
+            --font-mono: 'Space Mono', monospace;
+        }
+
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: var(--font-main);
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+        a { color: var(--purple-bright); text-decoration: none; transition: all 0.25s ease; }
+        a:hover { color: var(--cyan-bright); }
+        img { max-width: 100%; display: block; }
+
+        /* ============ NAV ============ */
+        .nav {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            background: rgba(12, 14, 31, 0.88);
+            backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--border-color);
+            padding: 0 2rem;
+        }
+        .nav-inner {
+            max-width: 1200px; margin: 0 auto;
+            display: flex; align-items: center; justify-content: space-between;
+            height: 70px;
+        }
+        .nav-brand {
+            display: flex; align-items: center; gap: 0.75rem;
+            font-weight: 700; font-size: 1.1rem; color: var(--text-primary);
+        }
+        .nav-brand img { height: 38px; width: 38px; border-radius: 8px; }
+        .nav-links { display: flex; gap: 2rem; list-style: none; align-items: center; }
+        .nav-links a {
+            color: var(--text-secondary); font-size: 0.9rem; font-weight: 500;
+            transition: color 0.25s;
+        }
+        .nav-links a:hover { color: var(--text-primary); }
+        .nav-cta {
+            background: var(--gradient-purple); color: #fff;
+            padding: 0.55rem 1.4rem; border-radius: 8px;
+            font-weight: 600; font-size: 0.85rem;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .nav-cta:hover {
+            color: #fff; transform: translateY(-1px);
+            box-shadow: 0 4px 20px rgba(96, 34, 157, 0.4);
+        }
+        .nav-toggle { display: none; background: none; border: none; cursor: pointer; padding: 0.5rem; }
+        .nav-toggle span { display: block; width: 24px; height: 2px; background: var(--text-primary); margin: 5px 0; border-radius: 2px; }
+
+        /* ============ HERO ============ */
+        .hero {
+            min-height: 100vh; display: flex; align-items: center; justify-content: center;
+            text-align: center; padding: 8rem 2rem 4rem;
+            background: var(--gradient-hero);
+            position: relative;
+        }
+        .hero::before {
+            content: '';
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+            background:
+                radial-gradient(ellipse 700px 500px at 20% 35%, rgba(69, 17, 116, 0.10), transparent),
+                radial-gradient(ellipse 600px 400px at 80% 65%, rgba(0, 144, 186, 0.06), transparent);
+            pointer-events: none;
+        }
+        .hero-content { max-width: 800px; position: relative; z-index: 1; }
+        .hero-badge {
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            background: var(--bg-card); border: 1px solid var(--border-color);
+            padding: 0.4rem 1rem; border-radius: 50px;
+            font-size: 0.8rem; color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        .hero-badge span { color: var(--purple-bright); font-weight: 600; }
+        .hero h1 {
+            font-size: clamp(2.5rem, 6vw, 4rem); font-weight: 900;
+            line-height: 1.1; margin-bottom: 1.5rem;
+            letter-spacing: -0.02em;
+        }
+        .text-gold { color: var(--gold); }
+        .text-cyan { color: var(--cyan-bright); }
+        .text-purple { color: var(--purple-bright); }
+        .hero p {
+            font-size: 1.15rem; color: var(--text-secondary);
+            max-width: 600px; margin: 0 auto 2.5rem; line-height: 1.7;
+        }
+        .hero-buttons { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+        .btn-primary {
+            background: var(--gradient-purple); color: #fff;
+            padding: 0.85rem 2rem; border-radius: 10px;
+            font-weight: 700; font-size: 0.95rem; border: none; cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            display: inline-flex; align-items: center; gap: 0.5rem;
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .btn-primary:hover {
+            color: #fff; transform: translateY(-2px);
+            box-shadow: 0 8px 30px rgba(96, 34, 157, 0.4);
+        }
+        .btn-secondary {
+            background: transparent; color: var(--cyan);
+            padding: 0.85rem 2rem; border-radius: 10px;
+            font-weight: 600; font-size: 0.95rem;
+            border: 1px solid var(--cyan);
+            transition: background 0.25s, box-shadow 0.25s;
+            text-transform: uppercase; letter-spacing: 0.05em;
+        }
+        .btn-secondary:hover {
+            color: var(--cyan-bright);
+            background: rgba(0, 144, 186, 0.08);
+            box-shadow: 0 4px 20px rgba(0, 144, 186, 0.15);
+        }
+
+        /* Floating dots — matches main site's subtle particles */
+        .hero-dots { position: absolute; top: 0; left: 0; right: 0; bottom: 0; pointer-events: none; overflow: hidden; }
+        .dot {
+            position: absolute; border-radius: 50%;
+            animation: floatDot 7s ease-in-out infinite;
+        }
+        .dot:nth-child(1) { top: 10%; left: 14%; width: 5px; height: 5px; background: var(--purple); opacity: 0.5; }
+        .dot:nth-child(2) { top: 7%;  right: 22%; width: 4px; height: 4px; background: var(--gold); opacity: 0.35; animation-delay: 2s; }
+        .dot:nth-child(3) { top: 55%; left: 28%; width: 4px; height: 4px; background: var(--cyan); opacity: 0.3; animation-delay: 4s; }
+        .dot:nth-child(4) { top: 30%; right: 12%; width: 5px; height: 5px; background: var(--purple-bright); opacity: 0.25; animation-delay: 1s; }
+        .dot:nth-child(5) { bottom: 28%; right: 32%; width: 3px; height: 3px; background: var(--cyan); opacity: 0.2; animation-delay: 3s; }
+        .dot:nth-child(6) { bottom: 35%; left: 10%; width: 4px; height: 4px; background: var(--gold); opacity: 0.2; animation-delay: 5s; }
+        @keyframes floatDot { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-14px); } }
+
+        /* ============ SECTIONS ============ */
+        .section { padding: 6rem 2rem; }
+        .section-inner { max-width: 1200px; margin: 0 auto; }
+        .section-label {
+            font-family: var(--font-mono);
+            font-size: 0.75rem; text-transform: uppercase;
+            letter-spacing: 0.15em; color: var(--purple-bright);
+            margin-bottom: 0.75rem;
+        }
+        .section-title {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            font-weight: 800; line-height: 1.2; margin-bottom: 1rem;
+        }
+        .section-subtitle {
+            font-size: 1.05rem; color: var(--text-secondary);
+            max-width: 600px; line-height: 1.7; margin-bottom: 3rem;
+        }
+        .divider { border: none; border-top: 1px solid var(--border-color); margin: 0; }
+
+        /* ============ GAME CARDS ============ */
+        .game-showcase { display: grid; gap: 4rem; }
+        .game-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            overflow: hidden;
+            transition: border-color 0.3s, box-shadow 0.3s;
+        }
+        .game-card:hover { box-shadow: var(--shadow-card); }
+        .game-card--feud:hover { border-color: rgba(251, 186, 31, 0.35); box-shadow: 0 4px 40px rgba(251, 186, 31, 0.08); }
+        .game-card--trivia:hover { border-color: rgba(0, 144, 186, 0.35); box-shadow: 0 4px 40px rgba(0, 144, 186, 0.08); }
+
+        .game-header {
+            padding: 2.5rem 2.5rem 1.5rem;
+            display: flex; align-items: flex-start; gap: 1.5rem;
+        }
+        .game-icon {
+            width: 64px; height: 64px; border-radius: 14px;
+            display: flex; align-items: center; justify-content: center;
+            font-size: 1.8rem; flex-shrink: 0;
+        }
+        .game-icon--feud { background: var(--gold-glow); border: 1px solid rgba(251, 186, 31, 0.25); }
+        .game-icon--trivia { background: var(--cyan-glow); border: 1px solid rgba(0, 144, 186, 0.25); }
+
+        .game-header h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.3rem; }
+        .feud-color { color: var(--gold); }
+        .trivia-color { color: var(--cyan); }
+        .game-tagline { color: var(--text-secondary); font-size: 0.95rem; font-style: italic; }
+
+        .game-body { padding: 0 2.5rem 2.5rem; }
+        .game-desc {
+            font-size: 1.05rem; color: var(--text-secondary);
+            line-height: 1.8; margin-bottom: 2rem;
+        }
+
+        .features {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 1.25rem; margin-bottom: 2rem;
+        }
+        .feat {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-sm);
+            padding: 1.25rem;
+            transition: border-color 0.25s;
+        }
+        .feat:hover { border-color: rgba(255,255,255,0.06); }
+        .feat .ico { font-size: 1.3rem; margin-bottom: 0.5rem; display: block; }
+        .feat h4 { font-size: 0.9rem; font-weight: 700; margin-bottom: 0.35rem; }
+        .feat p { font-size: 0.82rem; color: var(--text-muted); line-height: 1.5; }
+
+        /* Phone mockups */
+        .phones {
+            display: grid; grid-template-columns: repeat(3, 1fr);
+            gap: 1.5rem; margin-top: 2rem; max-width: 660px;
+        }
+        .phone {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: 24px; padding: 6px;
+            aspect-ratio: 9/16;
+            position: relative; overflow: hidden;
+        }
+        .phone-inner {
+            background: var(--bg-card); border-radius: 20px;
+            width: 100%; height: 100%;
+            display: flex; flex-direction: column;
+            align-items: center; justify-content: center;
+            text-align: center; padding: 1rem; position: relative;
+        }
+        .phone-notch {
+            position: absolute; top: 6px; left: 50%; transform: translateX(-50%);
+            width: 40%; height: 14px; background: var(--bg-secondary);
+            border-radius: 0 0 8px 8px;
+        }
+        .phone-lbl {
+            font-size: 0.6rem; color: var(--text-muted);
+            font-weight: 600; text-transform: uppercase;
+            letter-spacing: 0.1em;
+        }
+        .phone--has-img .phone-inner { padding: 0; }
+        .phone--has-img .phone-inner img {
+            width: 100%; height: 100%;
+            object-fit: cover; border-radius: 20px;
+        }
+
+        /* ============ FLOW STEPS ============ */
+        .steps {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+            gap: 2rem;
+        }
+        .step {
+            text-align: center; padding: 2rem 1.5rem;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            position: relative;
+            transition: border-color 0.3s, transform 0.2s;
+        }
+        .step:hover { border-color: var(--purple); transform: translateY(-3px); }
+        .step-num {
+            font-family: var(--font-mono);
+            font-size: 2.5rem; font-weight: 700;
+            color: var(--purple); opacity: 0.2;
+            position: absolute; top: 0.75rem; right: 1rem;
+        }
+        .step .ico { font-size: 2rem; margin-bottom: 1rem; display: block; }
+        .step h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .step p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
+
+        /* ============ COMPARISON TABLE ============ */
+        .table-wrap { overflow-x: auto; -webkit-overflow-scrolling: touch; margin-top: 2rem; }
+        .cmp {
+            width: 100%; border-collapse: separate; border-spacing: 0;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius); overflow: hidden; min-width: 560px;
+        }
+        .cmp th, .cmp td {
+            padding: 1rem 1.5rem; text-align: left;
+            border-bottom: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+        .cmp th {
+            background: var(--bg-secondary);
+            font-weight: 700; font-size: 0.8rem;
+            text-transform: uppercase; letter-spacing: 0.08em;
+            color: var(--text-secondary);
+        }
+        .cmp th:nth-child(2) { color: var(--gold); }
+        .cmp th:nth-child(3) { color: var(--cyan); }
+        .cmp td { color: var(--text-secondary); }
+        .cmp td:first-child { color: var(--text-primary); font-weight: 600; }
+        .cmp tr:last-child td { border-bottom: none; }
+        .cmp .chk { color: var(--purple-bright); font-weight: 700; }
+
+        /* ============ PITCH CARDS ============ */
+        .pitch-grid {
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+        }
+        .pitch {
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius); padding: 2rem;
+            transition: border-color 0.3s, transform 0.2s;
+        }
+        .pitch:hover { border-color: rgba(96, 34, 157, 0.35); transform: translateY(-2px); }
+        .pitch .ico { font-size: 1.5rem; margin-bottom: 0.75rem; display: block; }
+        .pitch h3 { font-size: 1.1rem; font-weight: 700; margin-bottom: 0.5rem; }
+        .pitch p { font-size: 0.9rem; color: var(--text-secondary); line-height: 1.6; }
+
+        /* ============ CTA BANNER ============ */
+        .cta {
+            text-align: center; padding: 5rem 2rem;
+            background: linear-gradient(180deg, transparent, rgba(69, 17, 116, 0.06), transparent);
+        }
+        .cta h2 { font-size: clamp(1.6rem, 3.5vw, 2.2rem); font-weight: 800; margin-bottom: 1rem; }
+        .cta p { color: var(--text-secondary); font-size: 1.05rem; max-width: 550px; margin: 0 auto 2rem; }
+        .cta .btn-primary { font-size: 1.05rem; padding: 1rem 2.5rem; }
+
+        /* ============ FOOTER ============ */
+        .footer { border-top: 1px solid var(--border-color); padding: 3rem 2rem; text-align: center; }
+        .footer-inner { max-width: 1200px; margin: 0 auto; }
+        .footer-brand { display: inline-flex; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+        .footer-brand img { height: 32px; width: 32px; border-radius: 6px; }
+        .footer-brand span { font-weight: 700; }
+        .footer p { color: var(--text-muted); font-size: 0.8rem; margin-bottom: 0.3rem; }
+        .footer a { color: var(--text-muted); }
+        .footer a:hover { color: var(--purple-bright); }
+        .footer-links { display: flex; gap: 2rem; justify-content: center; margin-top: 1.5rem; list-style: none; }
+        .footer-links a { color: var(--text-secondary); font-size: 0.85rem; font-weight: 500; }
+
+        /* ============ ANIMATIONS ============ */
+        .fi { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+        .fi.vis { opacity: 1; transform: translateY(0); }
+        .d1 { transition-delay: 0.1s; }
+        .d2 { transition-delay: 0.2s; }
+        .d3 { transition-delay: 0.3s; }
+        .d4 { transition-delay: 0.4s; }
+
+        /* ============ RESPONSIVE ============ */
+        @media (max-width: 768px) {
+            .nav-links { display: none; }
+            .nav-toggle { display: block; }
+            .nav-links.active {
+                display: flex; flex-direction: column;
+                position: absolute; top: 70px; left: 0; right: 0;
+                background: rgba(12, 14, 31, 0.98);
+                backdrop-filter: blur(20px);
+                padding: 1.5rem 2rem; gap: 1rem;
+                border-bottom: 1px solid var(--border-color);
+            }
+            .hero { min-height: auto; padding: 7rem 1.5rem 3rem; }
+            .hero h1 { font-size: 2rem; }
+            .section { padding: 4rem 1.5rem; }
+            .game-header { flex-direction: column; padding: 2rem 1.5rem 1rem; }
+            .game-body { padding: 0 1.5rem 2rem; }
+            .phones { grid-template-columns: repeat(2, 1fr); max-width: 340px; }
+            .features { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+    <div class="nav-inner">
+        <a href="https://gamenightguild.net" class="nav-brand">
+            <img src="images/gng-logo.png" alt="Game Night Guild">
+            Game Night Guild
+        </a>
+        <button class="nav-toggle" onclick="document.querySelector('.nav-links').classList.toggle('active')" aria-label="Menu">
+            <span></span><span></span><span></span>
+        </button>
+        <ul class="nav-links">
+            <li><a href="#games">Our Games</a></li>
+            <li><a href="#how-it-works">How It Works</a></li>
+            <li><a href="#compare">Compare</a></li>
+            <li><a href="#why-book">Why Book</a></li>
+            <li><a href="https://gamenightguild.net/#contact" class="nav-cta">Book an Event</a></li>
+        </ul>
+    </div>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+    <div class="hero-dots">
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+        <span class="dot"></span><span class="dot"></span><span class="dot"></span>
+    </div>
+    <div class="hero-content">
+        <div class="hero-badge">🎮 <span>Two Games. One Unforgettable Night.</span></div>
+        <h1>
+            <span class="text-gold">Family Feud</span> &amp;
+            <span class="text-cyan">Pub Trivia</span><br>
+            <span class="text-purple">Powered by Our Tech.</span>
+        </h1>
+        <p>No app downloads. No clunky quizzes. Just scan, play, and compete — all running on custom software built from scratch by our team.</p>
+        <div class="hero-buttons">
+            <a href="https://gamenightguild.net/#contact" class="btn-primary">Book Your Event &rarr;</a>
+            <a href="#games" class="btn-secondary">Explore the Games</a>
+        </div>
+    </div>
+</section>
+
+<!-- GAMES -->
+<section class="section" id="games">
+    <div class="section-inner">
+        <div class="section-label">Our Games</div>
+        <h2 class="section-title">Two Formats. Every Crowd.</h2>
+        <p class="section-subtitle">Whether your crowd wants survey-style showdowns or classic trivia battles, we've got the game — and the software — to make it legendary.</p>
+
+        <div class="game-showcase">
+
+            <!-- FAMILY FEUD -->
+            <div class="game-card game-card--feud fi">
+                <div class="game-header">
+                    <div class="game-icon game-icon--feud">🎯</div>
+                    <div>
+                        <h2><span class="feud-color">Family Feud</span> Style</h2>
+                        <p class="game-tagline">"Survey says…" but louder and at a bar.</p>
+                    </div>
+                </div>
+                <div class="game-body">
+                    <p class="game-desc">Teams compete to guess the top answers from real surveys — just like the show, but designed for pubs, breweries, and community events. High-energy rounds of guessing, live reveals on the big screen, and enough trash talk to fill the room. The host runs the show while our software keeps everything moving behind the scenes.</p>
+
+                    <div class="features">
+                        <div class="feat">
+                            <span class="ico">📱</span>
+                            <h4>Scan &amp; Play</h4>
+                            <p>Teams join instantly via QR code on their phones. No app download, no account creation. Scan, name your team, done.</p>
+                        </div>
+                        <div class="feat">
+                            <span class="ico">📺</span>
+                            <h4>TV Board Reveals</h4>
+                            <p>Dramatic answer reveals on the big screen — crowd reactions are half the fun. Just like the real show.</p>
+                        </div>
+                        <div class="feat">
+                            <span class="ico">🔗</span>
+                            <h4>Stay Connected</h4>
+                            <p>Players stay connected all game — even if they switch apps or lock their phone. Pick up right where you left off.</p>
+                        </div>
+                        <div class="feat">
+                            <span class="ico">🎨</span>
+                            <h4>Themed Nights</h4>
+                            <p>Custom surveys for any theme — 80s nostalgia, sports, holidays, or your venue's personality. We'll make it yours.</p>
+                        </div>
+                        <div class="feat">
+                            <span class="ico">🔄</span>
+                            <h4>Real-Time Updates</h4>
+                            <p>Scores, rounds, and standings update live across every device. No refreshing, no waiting — just seamless play.</p>
+                        </div>
+                        <div class="feat">
+                            <span class="ico">🏆</span>
+                            <h4>Competitive &amp; Fun</h4>
+                            <p>Ranked answers are worth different points. Strategy matters — do you go for #1 or play it safe?</p>
+                        </div>
+                    </div>
+
+                    <div class="phones">
+                        <div class="phone"><div class="phone-inner"><div class="phone-notch"></div><span class="phone-lbl">Team Join Screen</span></div></div>
+                        <div class="phone"><div class="phone-inner"><div class="phone-notch"></div><span class="phone-lbl">Answer Entry</span></div></div>
+                        <div class="phone"><div class="phone-inner"><div class="phone-notch"></div><span class="phone-lbl">Live Scoreboard</span></div></div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- PUB TRIVIA -->
+            <div class="game-card game-card--trivia fi">
+                <div class="game-header">
+                    <div class="game-icon game-icon--trivia">🧠</div>
+                    <div>
+                        <h2><span class="trivia-color">Pub Trivia</span></h2>
+                        <p class="game-tagline">Themed rounds. Tough questions. One team walks away bragging.</p>
+                    </div>
+                </div>
+                <div class="game-body">
+                    <p class="game-desc">Classic pub trivia, upgraded. Themed rounds of questions — from pop culture to history to the weird stuff nobody expects. Teams answer on their phones, our software handles scoring, and a live leaderboard keeps the competition fierce. Choose open-ended questions for the purists or multiple choice for faster-paced nights.</p>
+
+                    <div class="features">
+                        <div class="feat">
+                            <span class="ico">📱</span>
+                            <h4>Scan &amp; Play</h4>
+                            <p>Same frictionless entry — QR code, team name, done. Works on any phone browser, no downloads ever.</p>
+                        </div>
+                        <div class="feat">
+                            <span class="ico">🎲</span>
+                            <h4>Multiple Choice Mode</h4>
+                            <p>Auto-scored on submission — perfect for fast rounds. Or go open-ended for the real trivia heads.</p>
+                        </div>
+                        <div class="feat">
+                            <span class="ico">🔗</span>
+                            <h4>Stay Connected</h4>
+                            <p>Players stay connected all game — even if they switch apps or lock their phone. Pick up right where you left off.</p>
+                        </div>
+                        <div class="feat">
+                            <span class="ico">🏅</span>
+                            <h4>Live Leaderboard</h4>
+                            <p>Real-time standings after every round. Watch the lead change and the rivalries build all night long.</p>
+                        </div>
+                        <div class="feat">
+                            <span class="ico">✨</span>
+                            <h4>Endless Categories</h4>
+                            <p>Need a theme night? We can build custom trivia in any category. 90s hip-hop? NC history? Cat facts? Done.</p>
+                        </div>
+                        <div class="feat">
+                            <span class="ico">📊</span>
+                            <h4>Perfect Pacing</h4>
+                            <p>Structured for a perfect-length game night. Enough rounds to crown a real winner without losing the crowd.</p>
+                        </div>
+                    </div>
+
+                    <div class="phones">
+                        <div class="phone"><div class="phone-inner"><div class="phone-notch"></div><span class="phone-lbl">Team Join Screen</span></div></div>
+                        <div class="phone"><div class="phone-inner"><div class="phone-notch"></div><span class="phone-lbl">Question View</span></div></div>
+                        <div class="phone"><div class="phone-inner"><div class="phone-notch"></div><span class="phone-lbl">Leaderboard</span></div></div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</section>
+
+<hr class="divider">
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how-it-works">
+    <div class="section-inner">
+        <div class="section-label">For Your Guests</div>
+        <h2 class="section-title">How Players Join</h2>
+        <p class="section-subtitle">Your guests don't need to download anything, create an account, or ask anyone for help. Here's their entire experience:</p>
+
+        <div class="steps">
+            <div class="step fi">
+                <span class="step-num">1</span>
+                <span class="ico">📷</span>
+                <h3>Scan the QR Code</h3>
+                <p>Every table gets a card with a unique QR code. Scan it with any phone camera — it opens right in the browser.</p>
+            </div>
+            <div class="step fi d1">
+                <span class="step-num">2</span>
+                <span class="ico">✏️</span>
+                <h3>Name Your Team</h3>
+                <p>Pick a team name and you're instantly connected to the game. That's it — you're playing.</p>
+            </div>
+            <div class="step fi d2">
+                <span class="step-num">3</span>
+                <span class="ico">🎮</span>
+                <h3>Answer on Your Phone</h3>
+                <p>Questions appear each round. Type your answers, hit submit, and wait for the results. Answers auto-save if you switch apps.</p>
+            </div>
+            <div class="step fi d3">
+                <span class="step-num">4</span>
+                <span class="ico">🏆</span>
+                <h3>Watch the Scoreboard</h3>
+                <p>Scores update live after every round. Cheer, groan, trash-talk the table next to you. That's the whole point.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<hr class="divider">
+
+<!-- COMPARISON -->
+<section class="section" id="compare">
+    <div class="section-inner">
+        <div class="section-label">Side by Side</div>
+        <h2 class="section-title">Which Game Fits Your Night?</h2>
+        <p class="section-subtitle">Both games run on the same rock-solid tech. The difference is the vibe — pick the one that matches your crowd, or book both for the ultimate game night.</p>
+
+        <div class="table-wrap fi">
+            <table class="cmp">
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>🎯 Family Feud</th>
+                        <th>🧠 Pub Trivia</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td>Format</td><td>Survey-based guessing</td><td>Question &amp; answer trivia</td></tr>
+                    <tr><td>Answer Style</td><td>Open-ended on phones</td><td>Open-ended or multiple choice</td></tr>
+                    <tr><td>QR Code Join</td><td class="chk">✓</td><td class="chk">✓</td></tr>
+                    <tr><td>TV / Big Screen</td><td>Dramatic answer reveals</td><td>Live leaderboard display</td></tr>
+                    <tr><td>Custom Content</td><td>Custom surveys for any theme</td><td>Custom categories &amp; questions</td></tr>
+                    <tr><td>Best For</td><td>High energy, crowd interaction</td><td>Classic trivia lovers, competition</td></tr>
+                    <tr><td>Crowd Vibe</td><td>Loud, chaotic, hilarious</td><td>Competitive, strategic, focused</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</section>
+
+<hr class="divider">
+
+<!-- WHY BOOK -->
+<section class="section" id="why-book">
+    <div class="section-inner">
+        <div class="section-label">For Venue Owners</div>
+        <h2 class="section-title">Why Venues Choose Game Night Guild</h2>
+        <p class="section-subtitle">We don't just show up with a laptop and a quiz. We bring a full-production experience that keeps your guests engaged, spending, and coming back.</p>
+
+        <div class="pitch-grid">
+            <div class="pitch fi">
+                <span class="ico">💻</span>
+                <h3>Custom-Built Software</h3>
+                <p>Not Kahoot. Not a Google Form. Our games run on proprietary software built in-house — polished, reliable, and designed for live events.</p>
+            </div>
+            <div class="pitch fi d1">
+                <span class="ico">🙌</span>
+                <h3>Zero Work for You</h3>
+                <p>We handle everything — setup, hosting, AV, scoring, teardown. Your staff can focus on pouring drinks and ringing tabs.</p>
+            </div>
+            <div class="pitch fi d2">
+                <span class="ico">📈</span>
+                <h3>Drive Repeat Traffic</h3>
+                <p>Weekly game nights give people a reason to come back. Turn your slowest night into the one everyone saves a seat for.</p>
+            </div>
+            <div class="pitch fi d3">
+                <span class="ico">🎯</span>
+                <h3>Tailored to Your Crowd</h3>
+                <p>Bar crowd? Corporate team? HOA community? We customize the format, the questions, and the energy level to fit your people.</p>
+            </div>
+            <div class="pitch fi d4">
+                <span class="ico">📱</span>
+                <h3>No App Required</h3>
+                <p>Guests play on their own phones through the browser. No downloads, no accounts, no friction. Scan a QR code and play.</p>
+            </div>
+            <div class="pitch fi">
+                <span class="ico">🎙️</span>
+                <h3>We Bring the Host</h3>
+                <p>Every event comes with a dedicated host who runs the show — keeps the energy up, the rounds moving, and the crowd laughing.</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+    <img src="images/gng-logo.png" alt="Game Night Guild" style="height:48px;width:48px;border-radius:10px;margin:0 auto 1.5rem;">
+    <h2>Ready to See It In Action?</h2>
+    <p>Whether you want Feud, Trivia, or both — we'll build the perfect game night for your venue and your crowd.</p>
+    <a href="https://gamenightguild.net/#contact" class="btn-primary">Book Your Event &rarr;</a>
+</section>
+
+<!-- FOOTER -->
+<footer class="footer">
+    <div class="footer-inner">
+        <div class="footer-brand">
+            <img src="images/gng-logo.png" alt="Game Night Guild">
+            <span>Game Night Guild</span>
+        </div>
+        <p>&copy; 2026 Game Night Guild &mdash; A Hoeberlein Technologies Experience</p>
+        <p>Built by <a href="https://hoebtech.com">Hoeberlein Technologies LLC</a> &middot; Cary, NC</p>
+        <ul class="footer-links">
+            <li><a href="https://gamenightguild.net">Home</a></li>
+            <li><a href="https://gamenightguild.net/#how">How It Works</a></li>
+            <li><a href="https://gamenightguild.net/#contact">Book an Event</a></li>
+        </ul>
+    </div>
+</footer>
+
+<script>
+    const obs = new IntersectionObserver((entries) => {
+        entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('vis'); });
+    }, { threshold: 0.1, rootMargin: '0px 0px -50px 0px' });
+    document.querySelectorAll('.fi').forEach(el => obs.observe(el));
+</script>
+
+</body>
+</html>
