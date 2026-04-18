@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Our Games — Game Night Guild</title>
-    <meta name="description" content="Explore the games behind Game Night Guild — Family Feud-style survey showdowns and classic trivia, powered by custom-built software.">
+    <meta name="description" content="Explore the games behind Game Night Guild — Family Feud-style survey showdowns, classic trivia, and old-school music bingo, all powered by custom-built software and live hosts.">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
@@ -33,6 +33,10 @@
             --cyan: #0090BA;
             --cyan-bright: #1ab0de;
             --cyan-glow: rgba(0, 144, 186, 0.15);
+
+            --pink: #EC4899;
+            --pink-bright: #f472b6;
+            --pink-glow: rgba(236, 72, 153, 0.15);
 
             --brown: #63492D;
 
@@ -197,6 +201,7 @@
         .game-card:hover { box-shadow: var(--shadow-card); }
         .game-card--feud:hover { border-color: rgba(251, 186, 31, 0.35); box-shadow: 0 4px 40px rgba(251, 186, 31, 0.08); }
         .game-card--trivia:hover { border-color: rgba(0, 144, 186, 0.35); box-shadow: 0 4px 40px rgba(0, 144, 186, 0.08); }
+        .game-card--musicbingo:hover { border-color: rgba(236, 72, 153, 0.35); box-shadow: 0 4px 40px rgba(236, 72, 153, 0.10); }
 
         .game-header {
             padding: 2.5rem 2.5rem 1.5rem;
@@ -209,10 +214,12 @@
         }
         .game-icon--feud { background: var(--gold-glow); border: 1px solid rgba(251, 186, 31, 0.25); }
         .game-icon--trivia { background: var(--cyan-glow); border: 1px solid rgba(0, 144, 186, 0.25); }
+        .game-icon--musicbingo { background: var(--pink-glow); border: 1px solid rgba(236, 72, 153, 0.25); }
 
         .game-header h2 { font-size: 1.8rem; font-weight: 800; margin-bottom: 0.3rem; }
         .feud-color { color: var(--gold); }
         .trivia-color { color: var(--cyan); }
+        .musicbingo-color { color: var(--pink); }
         .game-tagline { color: var(--text-secondary); font-size: 0.95rem; font-style: italic; }
 
         .game-body { padding: 0 2.5rem 2.5rem; }
@@ -272,6 +279,69 @@
             object-fit: contain; border-radius: 20px;
         }
 
+        /* ============ BINGO CARD (Music Bingo) ============ */
+        .bingo-wrap {
+            position: relative;
+            max-width: 420px;
+            margin: 2rem auto 0;
+            padding: 2.5rem 1rem 1rem;
+        }
+        .bingo-card {
+            background: var(--bg-secondary);
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius);
+            padding: 1rem;
+            position: relative;
+            z-index: 1;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.4);
+        }
+        .bingo-header {
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            gap: 0.4rem; margin-bottom: 0.5rem;
+        }
+        .bingo-header span {
+            text-align: center; font-weight: 900; font-size: 1.6rem;
+            color: var(--pink); font-family: var(--font-main);
+            letter-spacing: 0.05em;
+        }
+        .bingo-grid {
+            display: grid; grid-template-columns: repeat(5, 1fr);
+            gap: 0.4rem;
+        }
+        .bingo-cell {
+            aspect-ratio: 1 / 1;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            display: flex; align-items: center; justify-content: center;
+            text-align: center; padding: 0.25rem;
+            font-size: 0.6rem; font-weight: 600;
+            color: var(--text-secondary); line-height: 1.15;
+            position: relative;
+            overflow: hidden;
+        }
+        .bingo-cell--free {
+            background: var(--pink-glow);
+            color: var(--pink); font-size: 1.4rem;
+        }
+        .bingo-cell--dabbed::after {
+            content: ''; position: absolute;
+            width: 70%; height: 70%; border-radius: 50%;
+            background: rgba(236, 72, 153, 0.55);
+            box-shadow: 0 0 12px rgba(236, 72, 153, 0.5);
+            transform: rotate(-8deg);
+        }
+        .notes { position: absolute; inset: 0; pointer-events: none; overflow: hidden; }
+        .note {
+            position: absolute; color: var(--pink);
+            font-size: 1.6rem; opacity: 0.35;
+            animation: floatDot 7s ease-in-out infinite;
+        }
+        .note:nth-child(1) { top: 4%;  left: 6%;  animation-delay: 0s; }
+        .note:nth-child(2) { top: 12%; right: 8%; animation-delay: 1.5s; font-size: 1.2rem; opacity: 0.25; }
+        .note:nth-child(3) { bottom: 8%; left: 12%; animation-delay: 3s; font-size: 1.3rem; opacity: 0.3; }
+        .note:nth-child(4) { bottom: 20%; right: 4%; animation-delay: 4.5s; font-size: 1.8rem; opacity: 0.28; }
+
         /* ============ FLOW STEPS ============ */
         .steps {
             display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
@@ -317,6 +387,7 @@
         }
         .cmp th:nth-child(2) { color: var(--gold); }
         .cmp th:nth-child(3) { color: var(--cyan); }
+        .cmp th:nth-child(4) { color: var(--pink); }
         .cmp td { color: var(--text-secondary); }
         .cmp td:first-child { color: var(--text-primary); font-weight: 600; }
         .cmp tr:last-child td { border-bottom: none; }
@@ -424,7 +495,7 @@
             <span class="text-gold">Game Shows</span><br>
             <span class="text-purple">Powered by Our Tech.</span>
         </h1>
-        <p>No app downloads. No clunky quizzes. Just scan, play, and compete — all running on custom software built from scratch by our team.</p>
+        <p>Digital game shows, classic paper bingo, and everything in between — custom-built software and live hosts for a night your crowd won't forget.</p>
         <div class="hero-buttons">
             <a href="https://gamenightguild.net/#contact" class="btn-primary">Book Your Event &rarr;</a>
             <a href="#games" class="btn-secondary">Explore the Games</a>
@@ -437,7 +508,7 @@
     <div class="section-inner">
         <div class="section-label">Our Games</div>
         <h2 class="section-title">Crowd Favorites to Meet Your Needs.</h2>
-        <p class="section-subtitle">Whether your crowd wants survey-style showdowns or classic trivia battles, we've got the game — and the software — to make it legendary.</p>
+        <p class="section-subtitle">From survey-style showdowns to classic trivia to old-school music bingo, we've got the game — and the crew — to make your night legendary.</p>
 
         <div class="game-showcase">
 
@@ -547,6 +618,98 @@
                 </div>
             </div>
 
+            <!-- MUSIC BINGO -->
+            <div class="game-card game-card--musicbingo fi">
+                <div class="game-header">
+                    <div class="game-icon game-icon--musicbingo">🎵</div>
+                    <div>
+                        <h2><span class="musicbingo-color">Music Bingo</span></h2>
+                        <p class="game-tagline">No Apps. No Screens. Just Music and Markers.</p>
+                    </div>
+                </div>
+                <div class="game-body">
+                    <p class="game-desc">Old-school paper bingo, new-school playlist. Players get a printed card filled with song titles, grab a dabber, and listen as the host spins a curated playlist. Hear a song on your card? Dab it. Fill a line and shout BINGO. It's the analog break your crowd didn't know they needed — pure social, tactile fun that gets every phone face-down on the table.</p>
+
+                    <div class="features">
+                        <div class="feat">
+                            <span class="ico">📝</span>
+                            <h4>Paper Cards &amp; Dabbers</h4>
+                            <p>Classic bingo feel. Every player gets a unique card and a colorful dabber — no downloads, no setup, no tech learning curve.</p>
+                        </div>
+                        <div class="feat">
+                            <span class="ico">🎧</span>
+                            <h4>Curated Playlists</h4>
+                            <p>80s, 90s, country, divas, one-hit wonders, decade mixes — pick the vibe and we'll build the set.</p>
+                        </div>
+                        <div class="feat">
+                            <span class="ico">🎤</span>
+                            <h4>Host-Led Energy</h4>
+                            <p>A live emcee spins the tracks, calls the winners, and keeps the room singing along between rounds.</p>
+                        </div>
+                        <div class="feat">
+                            <span class="ico">🎨</span>
+                            <h4>Themed Nights</h4>
+                            <p>Wedding eras, birthday decades, corporate throwbacks — custom playlists tailored to your crowd.</p>
+                        </div>
+                        <div class="feat">
+                            <span class="ico">🏆</span>
+                            <h4>Classic Bingo Rounds</h4>
+                            <p>Single line, four corners, blackout — rotate patterns between rounds to keep every player in the game.</p>
+                        </div>
+                        <div class="feat">
+                            <span class="ico">🙌</span>
+                            <h4>Social &amp; Nostalgic</h4>
+                            <p>The rare game night where phones stay down. Everyone's singing, dabbing, and laughing together.</p>
+                        </div>
+                    </div>
+
+                    <div class="bingo-wrap" aria-hidden="true">
+                        <div class="notes">
+                            <span class="note">&#9834;</span>
+                            <span class="note">&#9835;</span>
+                            <span class="note">&#9836;</span>
+                            <span class="note">&#9834;</span>
+                        </div>
+                        <div class="bingo-card">
+                            <div class="bingo-header">
+                                <span>M</span><span>U</span><span>S</span><span>I</span><span>C</span>
+                            </div>
+                            <div class="bingo-grid">
+                                <div class="bingo-cell bingo-cell--dabbed">Sweet Caroline</div>
+                                <div class="bingo-cell">Billie Jean</div>
+                                <div class="bingo-cell">Dancing Queen</div>
+                                <div class="bingo-cell">Mr. Brightside</div>
+                                <div class="bingo-cell">Livin' on a Prayer</div>
+
+                                <div class="bingo-cell">Crazy in Love</div>
+                                <div class="bingo-cell bingo-cell--dabbed">Hey Ya!</div>
+                                <div class="bingo-cell">Wonderwall</div>
+                                <div class="bingo-cell">Shake It Off</div>
+                                <div class="bingo-cell">Africa</div>
+
+                                <div class="bingo-cell">Jolene</div>
+                                <div class="bingo-cell">Smells Like Teen Spirit</div>
+                                <div class="bingo-cell bingo-cell--free">&#127925;</div>
+                                <div class="bingo-cell bingo-cell--dabbed">I Want It That Way</div>
+                                <div class="bingo-cell">Uptown Funk</div>
+
+                                <div class="bingo-cell">Don't Stop Believin'</div>
+                                <div class="bingo-cell">Take On Me</div>
+                                <div class="bingo-cell">Bohemian Rhapsody</div>
+                                <div class="bingo-cell bingo-cell--dabbed">Mamma Mia</div>
+                                <div class="bingo-cell">Rolling in the Deep</div>
+
+                                <div class="bingo-cell">September</div>
+                                <div class="bingo-cell">Ring of Fire</div>
+                                <div class="bingo-cell">Since U Been Gone</div>
+                                <div class="bingo-cell">Toxic</div>
+                                <div class="bingo-cell bingo-cell--dabbed">Mr. Blue Sky</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
 </section>
@@ -586,6 +749,11 @@
                 <p>Scores update live after every round. Cheer, groan, trash-talk the table next to you. That's the whole point.</p>
             </div>
         </div>
+
+        <p class="section-subtitle" style="margin-top: 3rem; margin-bottom: 0;">
+            <strong style="color: var(--pink);">Playing Music Bingo?</strong>
+            Skip the QR code — our host hands out paper cards and dabbers, then spins the playlist. Listen, dab each song you hear, and shout <em>BINGO</em> when you fill a line.
+        </p>
     </div>
 </section>
 
@@ -605,16 +773,17 @@
                         <th></th>
                         <th>🎯 Survey Says</th>
                         <th>🧠 Trivia</th>
+                        <th>🎵 Music Bingo</th>
                     </tr>
                 </thead>
                 <tbody>
-                    <tr><td>Format</td><td>Survey-based guessing</td><td>Question &amp; answer trivia</td></tr>
-                    <tr><td>Answer Style</td><td>Open-ended on phones</td><td>Open-ended or multiple choice</td></tr>
-                    <tr><td>QR Code Join</td><td class="chk">✓</td><td class="chk">✓</td></tr>
-                    <tr><td>TV / Big Screen</td><td>Dramatic answer reveals</td><td>Live leaderboard display</td></tr>
-                    <tr><td>Custom Content</td><td>Custom surveys for any theme</td><td>Custom categories &amp; questions</td></tr>
-                    <tr><td>Best For</td><td>High energy, crowd interaction</td><td>Classic trivia lovers, competition</td></tr>
-                    <tr><td>Crowd Vibe</td><td>Loud, chaotic, hilarious</td><td>Competitive, strategic, focused</td></tr>
+                    <tr><td>Format</td><td>Survey-based guessing</td><td>Question &amp; answer trivia</td><td>Paper bingo with music</td></tr>
+                    <tr><td>Answer Style</td><td>Open-ended on phones</td><td>Open-ended or multiple choice</td><td>Dab the card when you hear it</td></tr>
+                    <tr><td>QR Code Join</td><td class="chk">✓</td><td class="chk">✓</td><td>—</td></tr>
+                    <tr><td>TV / Big Screen</td><td>Dramatic answer reveals</td><td>Live leaderboard display</td><td>Optional "Now Playing" display</td></tr>
+                    <tr><td>Custom Content</td><td>Custom surveys for any theme</td><td>Custom categories &amp; questions</td><td>Custom playlists for any era or theme</td></tr>
+                    <tr><td>Best For</td><td>High energy, crowd interaction</td><td>Classic trivia lovers, competition</td><td>Social nights, weddings, mixed crowds</td></tr>
+                    <tr><td>Crowd Vibe</td><td>Loud, chaotic, hilarious</td><td>Competitive, strategic, focused</td><td>Nostalgic, unplugged, sing-along</td></tr>
                 </tbody>
             </table>
         </div>
