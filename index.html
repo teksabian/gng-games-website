@@ -392,6 +392,7 @@
         .cmp td:first-child { color: var(--text-primary); font-weight: 600; }
         .cmp tr:last-child td { border-bottom: none; }
         .cmp .chk { color: var(--gold); font-weight: 700; }
+        .scroll-hint { display: none; }
 
         /* ============ PITCH CARDS ============ */
         .pitch-grid {
@@ -460,6 +461,15 @@
             .game-body { padding: 0 1.5rem 2rem; }
             .phones { grid-template-columns: repeat(2, 1fr); max-width: 340px; }
             .features { grid-template-columns: 1fr; }
+
+            .scroll-hint {
+                display: block;
+                text-align: center;
+                margin-top: 0.75rem;
+                font-size: 0.8rem;
+                color: var(--text-secondary);
+                font-style: italic;
+            }
         }
     </style>
 </head>
@@ -790,6 +800,7 @@
                 </tbody>
             </table>
         </div>
+        <p class="scroll-hint">← Swipe to compare all 3 games →</p>
     </div>
 </section>
 
