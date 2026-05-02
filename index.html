@@ -460,44 +460,6 @@
             .game-body { padding: 0 1.5rem 2rem; }
             .phones { grid-template-columns: repeat(2, 1fr); max-width: 340px; }
             .features { grid-template-columns: 1fr; }
-
-            /* Comparison table → stacked feature cards on mobile */
-            .table-wrap { overflow-x: visible; }
-            .cmp {
-                min-width: 0;
-                background: transparent;
-                border: none;
-                border-radius: 0;
-                overflow: visible;
-            }
-            .cmp thead { display: none; }
-            .cmp tbody, .cmp tr, .cmp td { display: block; }
-            .cmp tr {
-                background: var(--bg-card);
-                border: 1px solid var(--border-color);
-                border-radius: var(--radius);
-                margin-bottom: 1rem;
-                padding: 0.75rem 1rem;
-            }
-            .cmp tr:last-child { margin-bottom: 0; }
-            .cmp td {
-                padding: 0.6rem 0;
-                border-bottom: 1px solid var(--border-color);
-                font-size: 0.9rem;
-            }
-            .cmp tr td:last-child { border-bottom: none; padding-bottom: 0; }
-            .cmp td:first-child {
-                color: var(--text-primary);
-                font-weight: 700;
-                font-size: 0.75rem;
-                text-transform: uppercase;
-                letter-spacing: 0.08em;
-                padding-top: 0;
-                padding-bottom: 0.75rem;
-            }
-            .cmp td:nth-child(2)::before { content: "🎯 Survey Says: "; color: var(--gold); font-weight: 700; }
-            .cmp td:nth-child(3)::before { content: "🧠 Trivia: ";       color: var(--cyan); font-weight: 700; }
-            .cmp td:nth-child(4)::before { content: "🎵 Music Bingo: ";  color: var(--pink); font-weight: 700; }
         }
     </style>
 </head>
